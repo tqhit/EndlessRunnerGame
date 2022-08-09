@@ -22,11 +22,14 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (!PlayerManager.isGameStarted)
+            return;
+
         direction.z = forwardSpeed;
 
         if (characterController.isGrounded)
         {
-            if (Input.GetKeyDown(KeyCode.UpArrow))
+            if (SwipeManager.swipeUp)
             {
                 Jump();
             }
@@ -36,14 +39,14 @@ public class PlayerController : MonoBehaviour
             direction.y += Gravity * Time.deltaTime;
         }
 
-        if (Input.GetKeyDown(KeyCode.RightArrow))
+        if (SwipeManager.swipeRight)
         {
             desiredLane++;
             if (desiredLane == 3)
                 desiredLane = 2;
         }
 
-        if (Input.GetKeyDown(KeyCode.LeftArrow))
+        if (SwipeManager.swipeLeft)
         {
             desiredLane--;
             if (desiredLane == -1)
@@ -75,11 +78,22 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (!PlayerManager.isGameStarted)
+            return;
+
         characterController.Move(direction * Time.fixedDeltaTime);
     }
 
     private void Jump()
     {
         direction.y = jumpForce;
+    }
+
+    private void OnControllerColliderHit(ControllerColliderHit hit)
+    {
+        if (hit.transform.tag == "Obstacle")
+        {
+            PlayerManager.gameOver = true;
+        }
     }
 }
