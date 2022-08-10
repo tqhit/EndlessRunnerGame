@@ -14,6 +14,12 @@ public class PlayerController : MonoBehaviour
     private int desiredLane = 1; //0: left, 1: middle, 2:right
     public float laneDistance = 4;
 
+    public Animator animator;
+
+    public bool isGrounded;
+    public Transform groundCheck;
+    public LayerMask groundLayer;
+
     void Start()
     {
         characterController = GetComponent<CharacterController>();
@@ -25,9 +31,13 @@ public class PlayerController : MonoBehaviour
         if (!PlayerManager.isGameStarted)
             return;
 
+        animator.SetBool("isGameStarted", true);
+
         direction.z = forwardSpeed;
 
-        if (characterController.isGrounded)
+        isGrounded = Physics.CheckSphere(groundCheck.position, 0.17f, groundLayer);
+        animator.SetBool("isGrounded", isGrounded);
+        if (isGrounded)
         {
             if (SwipeManager.swipeUp)
             {
